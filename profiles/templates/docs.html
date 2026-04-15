@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profiles API — Docs</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f7f6f3; --border: rgba(0,0,0,0.12);
+      --text: #1a1a1a; --muted: #6b6b68; --hint: #9b9b98;
+      --mono: 'Courier New', monospace; --sans: system-ui, sans-serif;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1c1c1a; --bg2: #252523; --border: rgba(255,255,255,0.12);
+              --text: #e8e7e3; --muted: #a0a09d; --hint: #666663; }
+      .method.POST { background: #085041; color: #9FE1CB; }
+      .method.GET  { background: #0C447C; color: #B5D4F4; }
+      .method.DELETE { background: #791F1F; color: #F7C1C1; }
+      .badge.required { background: #791F1F; color: #F7C1C1; }
+      .badge.optional { background: #0C447C; color: #B5D4F4; }
+      .error-code { color: #e8e7e3; }
+    }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 2rem 1rem; }
+    .wrap { max-width: 860px; margin: 0 auto; }
+    h1 { font-size: 22px; font-weight: 500; }
+    .subtitle { font-size: 14px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+    .base-url { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px;
+      background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius);
+      padding: 8px 14px; font-size: 13px; font-family: var(--mono); }
+    .base-url span { font-family: var(--sans); font-size: 12px; color: var(--muted); }
+    .section { margin: 2rem 0; }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; color: var(--hint);
+      text-transform: uppercase; margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 0.5px solid var(--border); }
+    .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 12px; overflow: hidden; }
+    .card-header { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; cursor: pointer; }
+    .card-header:hover { background: var(--bg2); }
+    .method { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 4px; min-width: 56px; text-align: center; flex-shrink: 0; margin-top: 1px; }
+    .method.POST   { background: #E1F5EE; color: #0F6E56; }
+    .method.GET    { background: #E6F1FB; color: #185FA5; }
+    .method.DELETE { background: #FCEBEB; color: #A32D2D; }
+    .ep-path { font-family: var(--mono); font-size: 14px; }
+    .ep-path .param { color: #BA7517; }
+    .ep-desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .ep-status { font-size: 12px; color: var(--hint); margin-top: 2px; }
+    .chevron { font-size: 11px; color: var(--hint); margin-left: auto; margin-top: 3px; transition: transform 0.2s; }
+    .chevron.open { transform: rotate(180deg); }
+    .card-body { display: none; border-top: 0.5px solid var(--border); padding: 18px; }
+    .card-body.open { display: block; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 580px) { .two-col { grid-template-columns: 1fr; } }
+    .block-label { font-size: 11px; font-weight: 500; color: var(--hint); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+    pre { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 12px; line-height: 1.7; overflow-x: auto; font-family: var(--mono); white-space: pre; }
+    .key { color: #185FA5; } .str { color: #0F6E56; } .num { color: #BA7517; }
+    .curl-wrap { position: relative; margin-top: 16px; }
+    .curl { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px 12px 14px; font-size: 12px; font-family: var(--mono); white-space: pre; overflow-x: auto; line-height: 1.7; }
+    .copy-btn { position: absolute; top: 8px; right: 8px; font-size: 11px; font-family: var(--sans); background: var(--bg); border: 0.5px solid var(--border); border-radius: 4px; padding: 3px 8px; cursor: pointer; color: var(--muted); }
+    .copy-btn:hover { color: var(--text); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; font-weight: 500; font-size: 11px; color: var(--hint); padding: 0 0 8px; letter-spacing: 0.06em; text-transform: uppercase; }
+    td { padding: 6px 0; border-top: 0.5px solid var(--border); vertical-align: top; }
+    td:first-child { font-family: var(--mono); font-size: 12px; color: #BA7517; padding-right: 16px; white-space: nowrap; }
+    td:last-child { color: var(--muted); font-size: 12px; }
+    .badge { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 500; margin-left: 6px; }
+    .badge.required { background: #FCEBEB; color: #A32D2D; }
+    .badge.optional { background: #E6F1FB; color: #185FA5; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .mini-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+    .error-code { font-size: 18px; font-weight: 500; font-family: var(--mono); }
+    .error-name { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .error-desc { font-size: 11px; color: var(--hint); margin-top: 6px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div style="margin-bottom:2.5rem">
+    <h1>Profiles API</h1>
+    <p class="subtitle">Enriches a name with gender, age, and nationality data via Genderize, Agify &amp; Nationalize.</p>
+    <div class="base-url"><span>Base URL</span> /api</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Endpoints</div>
+
+    <!-- POST /profiles -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="method POST">POST</span>
+        <div>
+          <div class="ep-path">/profiles</div>
+          <div class="ep-desc">Create a new profile by name</div>
+          <div class="ep-status">201 Created &nbsp;·&nbsp; 200 if already exists &nbsp;·&nbsp; 400 / 422 / 502</div>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="two-col">
+          <div>
+            <div class="block-label">Request body</div>
+            <pre>{ <span class="key">"name"</span>: <span class="str">"ella"</span> }</pre>
+            <div style="margin-top:12px">
+              <table>
+                <tr><th>Field</th><th></th><th>Notes</th></tr>
+                <tr><td>name</td><td><span class="badge required">required</span></td><td>Non-empty string. Case-insensitive.</td></tr>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="block-label">Response — 201</div>
+            <pre>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"uuid-v7"</span>,
+    <span class="key">"name"</span>: <span class="str">"ella"</span>,
+    <span class="key">"gender"</span>: <span class="str">"female"</span>,
+    <span class="key">"gender_probability"</span>: <span class="num">0.99</span>,
+    <span class="key">"sample_size"</span>: <span class="num">1234</span>,
+    <span class="key">"age"</span>: <span class="num">46</span>,
+    <span class="key">"age_group"</span>: <span class="str">"adult"</span>,
+    <span class="key">"country_id"</span>: <span class="str">"NG"</span>,
+    <span class="key">"country_probability"</span>: <span class="num">0.85</span>,
+    <span class="key">"created_at"</span>: <span class="str">"2026-04-01T12:00:00Z"</span>
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="curl-wrap">
+          <div class="block-label">Test with curl</div>
+          <div class="curl" id="c1">curl -X POST http://localhost:8000/api/profiles \
+  -H "Content-Type: application/json" \
+  -d '{"name": "ella"}'</div>
+          <button class="copy-btn" onclick="cp('c1',this)">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GET /profiles -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <div>
+          <div class="ep-path">/profiles</div>
+          <div class="ep-desc">List all profiles with optional filters</div>
+          <div class="ep-status">200 OK</div>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="two-col">
+          <div>
+            <div class="block-label">Query parameters</div>
+            <table>
+              <tr><th>Param</th><th></th><th>Example</th></tr>
+              <tr><td>gender</td><td><span class="badge optional">optional</span></td><td>male, female</td></tr>
+              <tr><td>country_id</td><td><span class="badge optional">optional</span></td><td>NG, US, GB</td></tr>
+              <tr><td>age_group</td><td><span class="badge optional">optional</span></td><td>child, teenager, adult, senior</td></tr>
+            </table>
+          </div>
+          <div>
+            <div class="block-label">Response — 200</div>
+            <pre>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"count"</span>: <span class="num">1</span>,
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="str">"uuid-v7"</span>,
+      <span class="key">"name"</span>: <span class="str">"ella"</span>,
+      <span class="key">"gender"</span>: <span class="str">"female"</span>,
+      <span class="key">"age"</span>: <span class="num">46</span>,
+      <span class="key">"age_group"</span>: <span class="str">"adult"</span>,
+      <span class="key">"country_id"</span>: <span class="str">"NG"</span>
+    }
+  ]
+}</pre>
+          </div>
+        </div>
+        <div class="curl-wrap">
+          <div class="block-label">Test with curl</div>
+          <div class="curl" id="c2">curl http://localhost:8000/api/profiles
+curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
+          <button class="copy-btn" onclick="cp('c2',this)">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GET /profiles/{id} -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <div>
+          <div class="ep-path">/profiles/<span class="param">{id}</span></div>
+          <div class="ep-desc">Retrieve a single profile by UUID</div>
+          <div class="ep-status">200 OK &nbsp;·&nbsp; 404 Not Found</div>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="curl-wrap">
+          <div class="block-label">Test with curl</div>
+          <div class="curl" id="c3">curl http://localhost:8000/api/profiles/&lt;profile-id&gt;</div>
+          <button class="copy-btn" onclick="cp('c3',this)">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELETE /profiles/{id} -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="method DELETE">DELETE</span>
+        <div>
+          <div class="ep-path">/profiles/<span class="param">{id}</span></div>
+          <div class="ep-desc">Delete a profile by UUID</div>
+          <div class="ep-status">204 No Content &nbsp;·&nbsp; 404 Not Found</div>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="curl-wrap">
+          <div class="block-label">Test with curl</div>
+          <div class="curl" id="c4">curl -X DELETE http://localhost:8000/api/profiles/&lt;profile-id&gt;</div>
+          <button class="copy-btn" onclick="cp('c4',this)">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Error codes</div>
+    <div class="grid-auto">
+      <div class="mini-card"><div class="error-code">400</div><div class="error-name">Bad Request</div><div class="error-desc">Missing or empty name field</div></div>
+      <div class="mini-card"><div class="error-code">404</div><div class="error-name">Not Found</div><div class="error-desc">No profile matches the given ID</div></div>
+      <div class="mini-card"><div class="error-code">422</div><div class="error-name">Unprocessable</div><div class="error-desc">Invalid type for name field</div></div>
+      <div class="mini-card"><div class="error-code">502</div><div class="error-name">Bad Gateway</div><div class="error-desc">External API returned invalid data</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Age group rules</div>
+    <div class="grid4">
+      <div class="mini-card"><div class="error-code" style="font-size:15px">0–12</div><div class="error-name">child</div></div>
+      <div class="mini-card"><div class="error-code" style="font-size:15px">13–19</div><div class="error-name">teenager</div></div>
+      <div class="mini-card"><div class="error-code" style="font-size:15px">20–59</div><div class="error-name">adult</div></div>
+      <div class="mini-card"><div class="error-code" style="font-size:15px">60+</div><div class="error-name">senior</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggle(header) {
+  const body = header.nextElementSibling;
+  const ch = header.querySelector('.chevron');
+  const open = body.classList.toggle('open');
+  ch.classList.toggle('open', open);
+}
+function cp(id, btn) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+</script>
+</body>
+</html>
