@@ -1,5 +1,5 @@
 import json
-import uuid6
+import uuid 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -78,7 +78,7 @@ class ProfileListCreateView(View):
         except ValueError as e:
             return error_response(502, str(e))
 
-        profile_id = str(uuid6.uuid7())
+        profile_id = str(uuid.uuid4())
 
         profile = Profile.objects.create(
             id=profile_id,
