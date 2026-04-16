@@ -17,7 +17,20 @@ class Profile(models.Model):
         db_table = 'profiles'
 
     def to_dict(self, full=True):
-        data = {
+        if full:
+            return {
+                'id': self.id,
+                'name': self.name,
+                'gender': self.gender,
+                'gender_probability': self.gender_probability,
+                'sample_size': self.sample_size,
+                'age': self.age,
+                'age_group': self.age_group,
+                'country_id': self.country_id,
+                'country_probability': self.country_probability,
+                'created_at': self.created_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            }
+        return {
             'id': self.id,
             'name': self.name,
             'gender': self.gender,
@@ -25,11 +38,3 @@ class Profile(models.Model):
             'age_group': self.age_group,
             'country_id': self.country_id,
         }
-        if full:
-            data.update({
-                'gender_probability': self.gender_probability,
-                'sample_size': self.sample_size,
-                'country_probability': self.country_probability,
-                'created_at': self.created_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            })
-        return data

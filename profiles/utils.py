@@ -1,4 +1,5 @@
 import requests
+from urllib.parse import quote
 
 
 def get_age_group(age):
@@ -13,21 +14,31 @@ def get_age_group(age):
 
 
 def fetch_external_data(name):
-    """
-    Calls all three external APIs and returns combined data.
-    Raises ValueError with a message on any bad response.
-    """
+    encoded_name = quote(name)
+
+    # Genderize
     try:
-        g_res = requests.get(f'https://api.genderize.io?name={name}', timeout=10)
+        g_res = requests.get(
+            f'https://api.genderize.io?name={encoded_name}',
+            timeout=15,
+            headers={'Accept': 'application/json'}
+        )
+        g_res.raise_for_status()
         g_data = g_res.json()
     except Exception:
         raise ValueError('Genderize returned an invalid response')
 
-    if not g_data.get('gender') or g_data.get('count', 0) == 0:
+    if not g_data.get('gender') or not g_data.get('count'):
         raise ValueError('Genderize returned an invalid response')
 
+    # Agify
     try:
-        a_res = requests.get(f'https://api.agify.io?name={name}', timeout=10)
+        a_res = requests.get(
+            f'https://api.agify.io?name={encoded_name}',
+            timeout=15,
+            headers={'Accept': 'application/json'}
+        )
+        a_res.raise_for_status()
         a_data = a_res.json()
     except Exception:
         raise ValueError('Agify returned an invalid response')
@@ -35,8 +46,14 @@ def fetch_external_data(name):
     if a_data.get('age') is None:
         raise ValueError('Agify returned an invalid response')
 
+    # Nationalize
     try:
-        n_res = requests.get(f'https://api.nationalize.io?name={name}', timeout=10)
+        n_res = requests.get(
+            f'https://api.nationalize.io?name={encoded_name}',
+            timeout=15,
+            headers={'Accept': 'application/json'}
+        )
+        n_res.raise_for_status()
         n_data = n_res.json()
     except Exception:
         raise ValueError('Nationalize returned an invalid response')
@@ -45,7 +62,6 @@ def fetch_external_data(name):
     if not countries:
         raise ValueError('Nationalize returned an invalid response')
 
-    # Pick country with highest probability
     top_country = max(countries, key=lambda c: c.get('probability', 0))
 
     return {
