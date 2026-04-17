@@ -6,7 +6,6 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-
 from .models import Profile
 from .utils import fetch_external_data
 
@@ -20,16 +19,13 @@ def add_cors(response):
     response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     return response
 
-
 def error_response(status, message):
     res = JsonResponse({'status': 'error', 'message': message}, status=status)
     return add_cors(res)
 
-
 def json_response(data, status=200):
     res = JsonResponse(data, status=status)
     return add_cors(res)
-
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ProfileListCreateView(View):
@@ -42,24 +38,40 @@ class ProfileListCreateView(View):
         return res
 
     def post(self, request):
+        # Debug: print what we received
+        print(f"Request body: {request.body}")
+        print(f"Content-Type: {request.content_type}")
+        
+        # Parse JSON body
         try:
-            body = json.loads(request.body)
-        except (json.JSONDecodeError, ValueError):
-            return error_response(400, 'Invalid JSON body')
+            # Read the request body
+            body_str = request.body.decode('utf-8')
+            if not body_str:
+                return error_response(400, 'Empty request body')
+            
+            body = json.loads(body_str)
+            print(f"Parsed body: {body}")
+        except json.JSONDecodeError as e:
+            return error_response(400, f'Invalid JSON: {str(e)}')
+        except Exception as e:
+            return error_response(400, f'Error: {str(e)}')
 
-        # Check type first — if name key exists but is not a string
+        # Get name from body
         name_raw = body.get('name')
 
-        if name_raw is None or name_raw == '':
-            return error_response(400, 'Missing or empty name')
+        if name_raw is None:
+            return error_response(400, 'Missing name field')
+        
+        if name_raw == '':
+            return error_response(400, 'Empty name value')
 
         if not isinstance(name_raw, str):
-            return error_response(422, 'Invalid type')
+            return error_response(422, 'Invalid type - name must be a string')
 
-        name = name_raw.strip()
+        name = name_raw.strip().lower()
 
         if not name:
-            return error_response(400, 'Missing or empty name')
+            return error_response(400, 'Name cannot be empty after trimming')
 
         # Idempotency check
         try:
@@ -75,15 +87,21 @@ class ProfileListCreateView(View):
         # Fetch from external APIs
         try:
             data = fetch_external_data(name)
+            print(f"External data: {data}")
         except ValueError as e:
             return error_response(502, str(e))
 
-        profile_id = str(uuid.uuid4())
-
+        # Create profile
         profile = Profile.objects.create(
-            id=profile_id,
-            name=name.lower(),
-            **data,
+            id=str(uuid.uuid4()),
+            name=name,
+            gender=data['gender'],
+            gender_probability=data['gender_probability'],
+            sample_size=data['sample_size'],
+            age=data['age'],
+            age_group=data['age_group'],
+            country_id=data['country_id'],
+            country_probability=data['country_probability'],
         )
 
         return json_response({'status': 'success', 'data': profile.to_dict(full=True)}, status=201)
