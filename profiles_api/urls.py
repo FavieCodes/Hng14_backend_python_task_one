@@ -20,6 +20,6 @@ from profiles.views import api_docs
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', api_docs), 
+    path('', api_docs, name='api-docs'),
     path('api/', include('profiles.urls')),
 ]
