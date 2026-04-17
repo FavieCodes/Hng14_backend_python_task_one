@@ -102,7 +102,6 @@
     .error-name { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .error-desc { font-size: 11px; color: var(--hint); margin-top: 6px; line-height: 1.5; }
 
-    /* --- Tester --- */
     .ep-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
       border: 0.5px solid var(--border); border-radius: var(--radius); font-size: 11px;
       cursor: pointer; margin: 0 4px 6px 0; background: var(--bg); }
@@ -146,7 +145,7 @@
   <div style="margin-bottom:2rem">
     <h1>Profiles API</h1>
     <p class="subtitle">Enriches a name with gender, age, and nationality data via Genderize, Agify &amp; Nationalize.</p>
-    <div class="base-url"><span>Base URL</span> http://localhost:8000/api</div>
+    <div class="base-url"><span>Base URL</span> <span id="baseUrlDisplay">Loading...</span></div>
   </div>
 
   <div class="tabs">
@@ -167,7 +166,7 @@
           <div>
             <div class="ep-path">/profiles</div>
             <div class="ep-desc">Create a new profile by name</div>
-            <div class="ep-status">201 Created &nbsp;·&nbsp; 200 if already exists &nbsp;·&nbsp; 400 / 422 / 502</div>
+            <div class="ep-status">201 Created · 200 if already exists · 400 / 422 / 502</div>
           </div>
           <span class="chevron">▼</span>
         </div>
@@ -176,38 +175,14 @@
             <div>
               <div class="block-label">Request body</div>
               <pre>{ <span class="key">"name"</span>: <span class="str">"ella"</span> }</pre>
-              <div style="margin-top:12px">
-                <table>
-                  <tr><th>Field</th><th></th><th>Notes</th></tr>
-                  <tr><td>name</td><td><span class="badge req">required</span></td><td>Non-empty string. Case-insensitive.</td></tr>
-                </table>
-              </div>
             </div>
             <div>
               <div class="block-label">Response — 201</div>
               <pre>{
   <span class="key">"status"</span>: <span class="str">"success"</span>,
-  <span class="key">"data"</span>: {
-    <span class="key">"id"</span>: <span class="str">"uuid-v7"</span>,
-    <span class="key">"name"</span>: <span class="str">"ella"</span>,
-    <span class="key">"gender"</span>: <span class="str">"female"</span>,
-    <span class="key">"gender_probability"</span>: <span class="num">0.99</span>,
-    <span class="key">"sample_size"</span>: <span class="num">1234</span>,
-    <span class="key">"age"</span>: <span class="num">46</span>,
-    <span class="key">"age_group"</span>: <span class="str">"adult"</span>,
-    <span class="key">"country_id"</span>: <span class="str">"NG"</span>,
-    <span class="key">"country_probability"</span>: <span class="num">0.85</span>,
-    <span class="key">"created_at"</span>: <span class="str">"2026-04-01T12:00:00Z"</span>
-  }
+  <span class="key">"data"</span>: { ... }
 }</pre>
             </div>
-          </div>
-          <div class="curl-wrap">
-            <div class="block-label">curl</div>
-            <div class="curl" id="c1">curl -X POST http://localhost:8000/api/profiles \
-  -H "Content-Type: application/json" \
-  -d '{"name": "ella"}'</div>
-            <button class="copy-btn" onclick="cp('c1',this)">Copy</button>
           </div>
         </div>
       </div>
@@ -239,24 +214,9 @@
               <pre>{
   <span class="key">"status"</span>: <span class="str">"success"</span>,
   <span class="key">"count"</span>: <span class="num">1</span>,
-  <span class="key">"data"</span>: [
-    {
-      <span class="key">"id"</span>: <span class="str">"uuid-v7"</span>,
-      <span class="key">"name"</span>: <span class="str">"ella"</span>,
-      <span class="key">"gender"</span>: <span class="str">"female"</span>,
-      <span class="key">"age"</span>: <span class="num">46</span>,
-      <span class="key">"age_group"</span>: <span class="str">"adult"</span>,
-      <span class="key">"country_id"</span>: <span class="str">"NG"</span>
-    }
-  ]
+  <span class="key">"data"</span>: [...]
 }</pre>
             </div>
-          </div>
-          <div class="curl-wrap">
-            <div class="block-label">curl</div>
-            <div class="curl" id="c2">curl http://localhost:8000/api/profiles
-curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
-            <button class="copy-btn" onclick="cp('c2',this)">Copy</button>
           </div>
         </div>
       </div>
@@ -268,16 +228,9 @@ curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
           <div>
             <div class="ep-path">/profiles/<span class="param">{id}</span></div>
             <div class="ep-desc">Retrieve a single profile by UUID</div>
-            <div class="ep-status">200 OK &nbsp;·&nbsp; 404 Not Found</div>
+            <div class="ep-status">200 OK · 404 Not Found</div>
           </div>
           <span class="chevron">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="curl-wrap" style="margin-top:0">
-            <div class="block-label">curl</div>
-            <div class="curl" id="c3">curl http://localhost:8000/api/profiles/&lt;profile-id&gt;</div>
-            <button class="copy-btn" onclick="cp('c3',this)">Copy</button>
-          </div>
         </div>
       </div>
 
@@ -288,16 +241,9 @@ curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
           <div>
             <div class="ep-path">/profiles/<span class="param">{id}</span></div>
             <div class="ep-desc">Delete a profile by UUID</div>
-            <div class="ep-status">204 No Content &nbsp;·&nbsp; 404 Not Found</div>
+            <div class="ep-status">204 No Content · 404 Not Found</div>
           </div>
           <span class="chevron">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="curl-wrap" style="margin-top:0">
-            <div class="block-label">curl</div>
-            <div class="curl" id="c4">curl -X DELETE http://localhost:8000/api/profiles/&lt;profile-id&gt;</div>
-            <button class="copy-btn" onclick="cp('c4',this)">Copy</button>
-          </div>
         </div>
       </div>
     </div>
@@ -335,8 +281,6 @@ curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
         <span class="ep-chip" onclick="fill('GET','/api/profiles?gender=female','')"><span class="m GET">GET</span>/profiles?gender=female</span>
         <span class="ep-chip" onclick="fill('GET','/api/profiles?age_group=adult','')"><span class="m GET">GET</span>/profiles?age_group=adult</span>
         <span class="ep-chip" onclick="fill('GET','/api/profiles?country_id=NG','')"><span class="m GET">GET</span>/profiles?country_id=NG</span>
-        <span class="ep-chip" onclick="fill('GET','/api/profiles/','')"><span class="m GET">GET</span>/profiles/{id}</span>
-        <span class="ep-chip" onclick="fill('DELETE','/api/profiles/','')"><span class="m DELETE">DELETE</span>/profiles/{id}</span>
       </div>
     </div>
 
@@ -373,6 +317,22 @@ curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
 </div>
 
 <script>
+  // Detect the correct base URL
+  function getBaseUrl() {
+    // Check if we're on localhost or production
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:8000';
+    } else {
+      // For production on Railway - use the current origin
+      return window.location.origin;
+    }
+  }
+
+  const BASE_URL = getBaseUrl();
+  
+  // Update the displayed base URL
+  document.getElementById('baseUrlDisplay').textContent = BASE_URL + '/api';
+
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach((t,i) => {
       const names = ['docs','tester'];
@@ -389,14 +349,6 @@ curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
     ch.classList.toggle('open', open);
   }
 
-  function cp(id, btn) {
-    const text = document.getElementById(id).innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = 'Copied';
-      setTimeout(() => btn.textContent = 'Copy', 1500);
-    });
-  }
-
   function fill(method, url, body) {
     document.getElementById('t-method').value = method;
     document.getElementById('t-url').value = url;
@@ -410,13 +362,18 @@ curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
 
   async function sendReq() {
     const method = document.getElementById('t-method').value;
-    const url = document.getElementById('t-url').value.trim();
+    let url = document.getElementById('t-url').value.trim();
     const bodyText = document.getElementById('t-body').value.trim();
     const btn = document.getElementById('t-send-btn');
     const responseBox = document.getElementById('t-response');
     const statusWrap = document.getElementById('t-status-wrap');
     const statusPill = document.getElementById('t-status-pill');
     const statusText = document.getElementById('t-status-text');
+
+    // Prepend base URL if not already present
+    if (!url.startsWith('http')) {
+      url = BASE_URL + url;
+    }
 
     btn.textContent = 'Sending...';
     responseBox.textContent = '';
@@ -425,8 +382,10 @@ curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
 
     const opts = { method, headers: { 'Content-Type': 'application/json' } };
     if (bodyText && method !== 'GET' && method !== 'DELETE') {
-      try { JSON.parse(bodyText); opts.body = bodyText; }
-      catch(e) {
+      try { 
+        JSON.parse(bodyText); 
+        opts.body = bodyText; 
+      } catch(e) {
         responseBox.textContent = 'Invalid JSON in request body';
         responseBox.style.color = 'var(--red-text)';
         btn.textContent = 'Send';
@@ -450,7 +409,7 @@ curl "http://localhost:8000/api/profiles?gender=female&age_group=adult"</div>
         responseBox.style.color = '';
       }
     } catch(e) {
-      responseBox.textContent = 'Request failed: ' + e.message + '\n\nMake sure your Django server is running at http://localhost:8000';
+      responseBox.textContent = 'Request failed: ' + e.message + '\n\nMake sure your Django server is running at ' + BASE_URL;
       responseBox.style.color = 'var(--red-text)';
       statusWrap.style.display = 'none';
     }
