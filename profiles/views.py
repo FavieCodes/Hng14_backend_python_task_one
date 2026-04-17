@@ -9,6 +9,11 @@ from django.utils.decorators import method_decorator
 from .models import Profile
 from .utils import fetch_external_data
 
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({'status': 'healthy', 'message': 'API is running'})
+
 def api_docs(request):
     """Render the API documentation page"""
     return render(request, 'docs.html')
